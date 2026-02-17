@@ -1,0 +1,10 @@
+# Cryptography Algorithms Implementation - Project Dependencies
+
+# Web Framework
+Flask==2.3.0
+
+# Cryptography Libraries
+PyCryptodome==3.18.0
+
+# Additional utilities
+Werkzeug==2.3.0

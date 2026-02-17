@@ -1,0 +1,1156 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <!-- Character encoding and viewport for responsive design -->
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cryptography Algorithms Implementation</title>
+    
+    <!-- Bootstrap CSS for styling -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    
+    <!-- Font Awesome for icons -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    
+    <!-- Custom CSS -->
+    <style>
+        /* Root color variables for consistent theming */
+        :root {
+            --primary-color: #2c3e50;
+            --secondary-color: #3498db;
+            --success-color: #27ae60;
+            --danger-color: #e74c3c;
+            --warning-color: #f39c12;
+        }
+
+        /* Remove default body margin and set custom background */
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        /* Main container styling */
+        .container-main {
+            margin-top: 30px;
+            margin-bottom: 30px;
+        }
+
+        /* Header styling */
+        .header {
+            background: white;
+            border-radius: 10px;
+            padding: 30px;
+            margin-bottom: 30px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            text-align: center;
+        }
+
+        .header h1 {
+            color: var(--primary-color);
+            font-weight: 700;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            color: #7f8c8d;
+            font-size: 16px;
+        }
+
+        /* Main card styling */
+        .card {
+            border: none;
+            border-radius: 10px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.2);
+        }
+
+        .card-header {
+            background: linear-gradient(135deg, var(--secondary-color), var(--primary-color));
+            color: white;
+            border-radius: 10px 10px 0 0 !important;
+            padding: 20px;
+            font-weight: 600;
+        }
+
+        /* Input and select styling */
+        .form-control, .form-select {
+            border: 2px solid #ecf0f1;
+            border-radius: 8px;
+            padding: 12px;
+            transition: border-color 0.3s;
+        }
+
+        .form-control:focus, .form-select:focus {
+            border-color: var(--secondary-color);
+            box-shadow: 0 0 0 0.2rem rgba(52, 152, 219, 0.25);
+        }
+
+        /* Button styling */
+        .btn-primary {
+            background: linear-gradient(135deg, var(--secondary-color), #2980b9);
+            border: none;
+            border-radius: 8px;
+            padding: 12px 30px;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+
+        .btn-primary:hover {
+            background: linear-gradient(135deg, #2980b9, var(--secondary-color));
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(52, 152, 219, 0.4);
+        }
+
+        .btn-success {
+            background: var(--success-color);
+            border: none;
+            border-radius: 8px;
+            padding: 10px 20px;
+            font-weight: 600;
+        }
+
+        .btn-success:hover {
+            background: #229954;
+            transform: translateY(-2px);
+        }
+
+        .btn-danger {
+            background: var(--danger-color);
+            border: none;
+            border-radius: 8px;
+        }
+
+        .btn-danger:hover {
+            background: #c0392b;
+            transform: translateY(-2px);
+        }
+
+        /* Output area styling */
+        .output-area {
+            background: #f8f9fa;
+            border-left: 4px solid var(--secondary-color);
+            border-radius: 8px;
+            padding: 15px;
+            margin-top: 20px;
+            display: none;
+        }
+
+        .output-area.show {
+            display: block;
+            animation: slideIn 0.3s ease-in-out;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .output-label {
+            font-weight: 600;
+            color: var(--primary-color);
+            margin-top: 10px;
+        }
+
+        .output-value {
+            background: white;
+            padding: 12px;
+            border-radius: 6px;
+            margin-top: 8px;
+            border: 1px solid #ecf0f1;
+            word-break: break-all;
+            font-family: 'Courier New', monospace;
+            font-size: 13px;
+            max-height: 200px;
+            overflow-y: auto;
+        }
+
+        /* Alert styling */
+        .alert {
+            border: none;
+            border-radius: 8px;
+        }
+
+        .alert-danger {
+            background: #fadbd8;
+            color: #a93226;
+        }
+
+        .alert-success {
+            background: #d5f4e6;
+            color: #1e8449;
+        }
+
+        .alert-info {
+            background: #d6eaf8;
+            color: #154360;
+        }
+
+        /* Tab navigation */
+        .nav-tabs {
+            border-bottom: 2px solid #ecf0f1;
+        }
+
+        .nav-tabs .nav-link {
+            color: #7f8c8d;
+            border: none;
+            padding: 12px 20px;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+
+        .nav-tabs .nav-link:hover {
+            color: var(--secondary-color);
+            border-bottom: 3px solid var(--secondary-color);
+        }
+
+        .nav-tabs .nav-link.active {
+            color: white;
+            background: linear-gradient(135deg, var(--secondary-color), var(--primary-color));
+            border-radius: 8px 8px 0 0;
+        }
+
+        /* Badge styling */
+        .badge-primary {
+            background: var(--secondary-color);
+            padding: 6px 12px;
+            border-radius: 6px;
+        }
+
+        /* Copy button styling */
+        .copy-btn {
+            background: #ecf0f1;
+            border: 1px solid #bdc3c7;
+            color: var(--primary-color);
+            padding: 6px 12px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 12px;
+            font-weight: 600;
+            transition: all 0.2s;
+        }
+
+        .copy-btn:hover {
+            background: #bdc3c7;
+            color: white;
+        }
+
+        /* Loading spinner */
+        .spinner-border-sm {
+            width: 1.5rem;
+            height: 1.5rem;
+            border-width: 0.2em;
+        }
+
+        /* Separator */
+        .divider {
+            border-top: 2px dashed #ecf0f1;
+            margin: 30px 0;
+        }
+
+        /* Key display area */
+        .key-display {
+            background: #f8f9fa;
+            border: 1px solid #ecf0f1;
+            border-radius: 8px;
+            padding: 15px;
+            margin: 15px 0;
+            max-height: 150px;
+            overflow-y: auto;
+        }
+
+        .key-display textarea {
+            width: 100%;
+            border: 1px solid #ecf0f1;
+            border-radius: 6px;
+            padding: 10px;
+            font-family: 'Courier New', monospace;
+            font-size: 12px;
+            resize: vertical;
+            min-height: 100px;
+        }
+
+        /* Responsive adjustments */
+        @media (max-width: 768px) {
+            .header {
+                padding: 20px;
+            }
+
+            .card {
+                margin-bottom: 20px;
+            }
+
+            .header h1 {
+                font-size: 24px;
+            }
+
+            .btn-primary, .btn-success {
+                width: 100%;
+            }
+        }
+
+        /* Smooth transitions */
+        * {
+            transition: color 0.3s, background-color 0.3s;
+        }
+    </style>
+</head>
+<body>
+    <!-- Main Container -->
+    <div class="container container-main">
+        <!-- Header Section -->
+        <div class="header">
+            <h1>
+                <i class="fas fa-lock"></i> Cryptography Algorithms
+            </h1>
+            <p>Implement AES, RSA, and SHA-256 cryptographic operations</p>
+        </div>
+
+        <!-- Tab Navigation -->
+        <ul class="nav nav-tabs mb-4" role="tablist" style="background: white; border-radius: 10px; padding: 0; box-shadow: 0 5px 15px rgba(0,0,0,0.1);">
+            <li class="nav-item" role="presentation">
+                <button class="nav-link active" id="aes-tab" data-bs-toggle="tab" data-bs-target="#aes-content" type="button" role="tab">
+                    <i class="fas fa-key"></i> AES (Symmetric)
+                </button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="rsa-tab" data-bs-toggle="tab" data-bs-target="#rsa-content" type="button" role="tab">
+                    <i class="fas fa-lock-open"></i> RSA (Asymmetric)
+                </button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="hash-tab" data-bs-toggle="tab" data-bs-target="#hash-content" type="button" role="tab">
+                    <i class="fas fa-fingerprint"></i> SHA-256 (Hashing)
+                </button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="info-tab" data-bs-toggle="tab" data-bs-target="#info-content" type="button" role="tab">
+                    <i class="fas fa-info-circle"></i> About
+                </button>
+            </li>
+        </ul>
+
+        <!-- Tab Content -->
+        <div class="tab-content">
+            
+            <!-- ========== AES TAB ========== -->
+            <div class="tab-pane fade show active" id="aes-content" role="tabpanel">
+                <div class="row">
+                    <!-- AES Encryption Card -->
+                    <div class="col-lg-6 mb-4">
+                        <div class="card">
+                            <div class="card-header">
+                                <i class="fas fa-shield-alt"></i> AES Encryption
+                            </div>
+                            <div class="card-body">
+                                <p class="text-muted small">Symmetric encryption using AES-256-GCM</p>
+                                
+                                <!-- Generate AES Key Button -->
+                                <button class="btn btn-success btn-sm w-100 mb-3" id="generateAesKeyBtn">
+                                    <i class="fas fa-fingerprint"></i> Generate New AES Key
+                                </button>
+
+                                <!-- AES Key Input -->
+                                <div class="mb-3">
+                                    <label class="form-label">AES Key (Base64)</label>
+                                    <textarea class="form-control" id="aesKey" placeholder="Base64 encoded AES key" rows="3"></textarea>
+                                    <small class="text-muted">Generate a new key or paste an existing one</small>
+                                </div>
+
+                                <!-- Plaintext Input -->
+                                <div class="mb-3">
+                                    <label class="form-label">Plaintext</label>
+                                    <textarea class="form-control" id="aesPlaintext" placeholder="Enter text to encrypt" rows="4"></textarea>
+                                </div>
+
+                                <!-- Encrypt Button -->
+                                <button class="btn btn-primary" id="aesEncryptBtn">
+                                    <i class="fas fa-lock"></i> Encrypt
+                                </button>
+
+                                <!-- Encryption Output -->
+                                <div class="output-area" id="aesEncryptOutput">
+                                    <div class="output-label">
+                                        <i class="fas fa-check-circle text-success"></i> Encryption Result
+                                    </div>
+                                    <div>
+                                        <small class="text-muted">Ciphertext:</small>
+                                        <div class="output-value" id="aesCiphertext"></div>
+                                    </div>
+                                    <div>
+                                        <small class="text-muted">Nonce:</small>
+                                        <div class="output-value" id="aesNonce"></div>
+                                    </div>
+                                    <div>
+                                        <small class="text-muted">Tag (Authentication):</small>
+                                        <div class="output-value" id="aesTag"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- AES Decryption Card -->
+                    <div class="col-lg-6 mb-4">
+                        <div class="card">
+                            <div class="card-header">
+                                <i class="fas fa-unlock"></i> AES Decryption
+                            </div>
+                            <div class="card-body">
+                                <p class="text-muted small">Decrypt AES-256-GCM encrypted data</p>
+
+                                <!-- Decryption Key Input -->
+                                <div class="mb-3">
+                                    <label class="form-label">AES Key (Base64)</label>
+                                    <textarea class="form-control" id="aesDecryptKey" placeholder="Base64 encoded AES key" rows="3"></textarea>
+                                </div>
+
+                                <!-- Ciphertext Input -->
+                                <div class="mb-3">
+                                    <label class="form-label">Ciphertext (Base64)</label>
+                                    <textarea class="form-control" id="aesDecryptCiphertext" placeholder="Base64 encoded ciphertext" rows="3"></textarea>
+                                </div>
+
+                                <!-- Nonce Input -->
+                                <div class="mb-3">
+                                    <label class="form-label">Nonce (Base64)</label>
+                                    <textarea class="form-control" id="aesDecryptNonce" placeholder="Base64 encoded nonce" rows="2"></textarea>
+                                </div>
+
+                                <!-- Tag Input -->
+                                <div class="mb-3">
+                                    <label class="form-label">Tag (Base64)</label>
+                                    <textarea class="form-control" id="aesDecryptTag" placeholder="Base64 encoded authentication tag" rows="2"></textarea>
+                                </div>
+
+                                <!-- Decrypt Button -->
+                                <button class="btn btn-primary" id="aesDecryptBtn">
+                                    <i class="fas fa-unlock"></i> Decrypt
+                                </button>
+
+                                <!-- Decryption Output -->
+                                <div class="output-area" id="aesDecryptOutput">
+                                    <div class="output-label">
+                                        <i class="fas fa-check-circle text-success"></i> Decryption Result
+                                    </div>
+                                    <div>
+                                        <small class="text-muted">Plaintext:</small>
+                                        <div class="output-value" id="aesDecryptPlaintext"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ========== RSA TAB ========== -->
+            <div class="tab-pane fade" id="rsa-content" role="tabpanel">
+                <div class="row">
+                    <!-- RSA Key Generation Card -->
+                    <div class="col-lg-6 mb-4">
+                        <div class="card">
+                            <div class="card-header">
+                                <i class="fas fa-key"></i> Generate RSA Keypair
+                            </div>
+                            <div class="card-body">
+                                <p class="text-muted small">Generate 2048-bit RSA key pair</p>
+
+                                <button class="btn btn-success w-100 mb-3" id="generateRsaKeypairBtn">
+                                    <i class="fas fa-cog"></i> Generate New Keypair
+                                </button>
+
+                                <div id="rsaKeypairOutput" style="display: none;">
+                                    <div class="mb-3">
+                                        <label class="form-label">Public Key (PEM)</label>
+                                        <textarea class="form-control" id="rsaPublicKey" readonly rows="6"></textarea>
+                                        <button class="btn btn-sm btn-outline-secondary mt-2 copy-btn" onclick="copyToClipboard('rsaPublicKey')">
+                                            <i class="fas fa-copy"></i> Copy Public Key
+                                        </button>
+                                    </div>
+
+                                    <div class="mb-3">
+                                        <label class="form-label">Private Key (PEM) <span class="badge badge-primary">Keep Secret!</span></label>
+                                        <textarea class="form-control" id="rsaPrivateKey" readonly rows="8"></textarea>
+                                        <button class="btn btn-sm btn-outline-secondary mt-2 copy-btn" onclick="copyToClipboard('rsaPrivateKey')">
+                                            <i class="fas fa-copy"></i> Copy Private Key
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- RSA Encryption & Decryption Card -->
+                    <div class="col-lg-6 mb-4">
+                        <div class="card">
+                            <div class="card-header">
+                                <i class="fas fa-shield-alt"></i> RSA Encrypt / Decrypt
+                            </div>
+                            <div class="card-body">
+                                <p class="text-muted small">Asymmetric encryption with RSA 2048-bit</p>
+
+                                <!-- Encryption Section -->
+                                <div class="mb-3">
+                                    <label class="form-label"><strong>Encryption</strong></label>
+                                    <textarea class="form-control" id="rsaPublicKeyForEncrypt" placeholder="Paste public key here" rows="4"></textarea>
+                                </div>
+
+                                <div class="mb-3">
+                                    <label class="form-label">Plaintext (max ~245 chars)</label>
+                                    <textarea class="form-control" id="rsaPlaintext" placeholder="Enter text to encrypt" rows="3"></textarea>
+                                </div>
+
+                                <button class="btn btn-primary mb-3" id="rsaEncryptBtn">
+                                    <i class="fas fa-lock"></i> Encrypt
+                                </button>
+
+                                <div class="output-area" id="rsaEncryptOutput">
+                                    <div class="output-label">Ciphertext (Base64):</div>
+                                    <div class="output-value" id="rsaCiphertext"></div>
+                                </div>
+
+                                <div class="divider"></div>
+
+                                <!-- Decryption Section -->
+                                <div class="mb-3">
+                                    <label class="form-label"><strong>Decryption</strong></label>
+                                    <textarea class="form-control" id="rsaPrivateKeyForDecrypt" placeholder="Paste private key here" rows="4"></textarea>
+                                </div>
+
+                                <div class="mb-3">
+                                    <label class="form-label">Ciphertext (Base64)</label>
+                                    <textarea class="form-control" id="rsaDecryptCiphertext" placeholder="Base64 encoded ciphertext" rows="3"></textarea>
+                                </div>
+
+                                <button class="btn btn-primary" id="rsaDecryptBtn">
+                                    <i class="fas fa-unlock"></i> Decrypt
+                                </button>
+
+                                <div class="output-area" id="rsaDecryptOutput">
+                                    <div class="output-label">Plaintext:</div>
+                                    <div class="output-value" id="rsaDecryptPlaintext"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ========== SHA-256 HASHING TAB ========== -->
+            <div class="tab-pane fade" id="hash-content" role="tabpanel">
+                <div class="row">
+                    <!-- Password Hashing Card -->
+                    <div class="col-lg-6 mb-4">
+                        <div class="card">
+                            <div class="card-header">
+                                <i class="fas fa-lock"></i> Hash Password (with Salt)
+                            </div>
+                            <div class="card-body">
+                                <p class="text-muted small">Secure password hashing with SHA-256 and random salt</p>
+
+                                <div class="mb-3">
+                                    <label class="form-label">Password</label>
+                                    <input type="password" class="form-control" id="passwordInput" placeholder="Enter password">
+                                </div>
+
+                                <button class="btn btn-primary w-100 mb-3" id="hashPasswordBtn">
+                                    <i class="fas fa-fingerprint"></i> Hash Password
+                                </button>
+
+                                <div class="output-area" id="passwordHashOutput">
+                                    <div class="output-label">Hash Result:</div>
+                                    
+                                    <div>
+                                        <small class="text-muted">Salt (for verification):</small>
+                                        <div class="output-value" id="passwordSalt"></div>
+                                        <button class="btn btn-sm copy-btn mt-2" onclick="copyToClipboard('passwordSalt')">
+                                            <i class="fas fa-copy"></i> Copy Salt
+                                        </button>
+                                    </div>
+
+                                    <div>
+                                        <small class="text-muted">Hash:</small>
+                                        <div class="output-value" id="passwordHash"></div>
+                                        <button class="btn btn-sm copy-btn mt-2" onclick="copyToClipboard('passwordHash')">
+                                            <i class="fas fa-copy"></i> Copy Hash
+                                        </button>
+                                    </div>
+
+                                    <div>
+                                        <small class="text-muted">Full Hash (for storage):</small>
+                                        <div class="output-value" id="fullPasswordHash"></div>
+                                        <button class="btn btn-sm copy-btn mt-2" onclick="copyToClipboard('fullPasswordHash')">
+                                            <i class="fas fa-copy"></i> Copy Full Hash
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Password Verification Card -->
+                    <div class="col-lg-6 mb-4">
+                        <div class="card">
+                            <div class="card-header">
+                                <i class="fas fa-check"></i> Verify Password
+                            </div>
+                            <div class="card-body">
+                                <p class="text-muted small">Verify password against stored hash</p>
+
+                                <div class="mb-3">
+                                    <label class="form-label">Password to Verify</label>
+                                    <input type="password" class="form-control" id="passwordToVerify" placeholder="Enter password">
+                                </div>
+
+                                <div class="mb-3">
+                                    <label class="form-label">Stored Hash</label>
+                                    <textarea class="form-control" id="storedHash" placeholder="Paste the stored hash (salt$hash format)" rows="4"></textarea>
+                                </div>
+
+                                <button class="btn btn-primary w-100 mb-3" id="verifyPasswordBtn">
+                                    <i class="fas fa-check-circle"></i> Verify Password
+                                </button>
+
+                                <div class="output-area" id="passwordVerifyOutput">
+                                    <div id="verifyResult"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <!-- Data Hashing Card -->
+                    <div class="col-lg-12 mb-4">
+                        <div class="card">
+                            <div class="card-header">
+                                <i class="fas fa-file"></i> Hash Data (for Integrity Check)
+                            </div>
+                            <div class="card-body">
+                                <p class="text-muted small">Generate SHA-256 hash of any data for integrity verification</p>
+
+                                <div class="mb-3">
+                                    <label class="form-label">Data to Hash</label>
+                                    <textarea class="form-control" id="dataToHash" placeholder="Enter any text to create SHA-256 hash" rows="4"></textarea>
+                                </div>
+
+                                <button class="btn btn-primary" id="hashDataBtn">
+                                    <i class="fas fa-fingerprint"></i> Generate Hash
+                                </button>
+
+                                <div class="output-area" id="dataHashOutput">
+                                    <div class="output-label">SHA-256 Hash:</div>
+                                    <div class="output-value" id="dataHash"></div>
+                                    <button class="btn btn-sm copy-btn mt-2" onclick="copyToClipboard('dataHash')">
+                                        <i class="fas fa-copy"></i> Copy Hash
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ========== INFORMATION TAB ========== -->
+            <div class="tab-pane fade" id="info-content" role="tabpanel">
+                <div class="row">
+                    <div class="col-lg-8 offset-lg-2">
+                        <!-- AES Information -->
+                        <div class="card mb-4">
+                            <div class="card-header">
+                                <i class="fas fa-key"></i> AES (Advanced Encryption Standard)
+                            </div>
+                            <div class="card-body">
+                                <h6>Symmetric Encryption</h6>
+                                <p>AES is a symmetric encryption algorithm, meaning the same key is used for both encryption and decryption.</p>
+                                <ul>
+                                    <li><strong>Block Size:</strong> 128 bits</li>
+                                    <li><strong>Key Size:</strong> 128, 192, or 256 bits (we use 256 for maximum security)</li>
+                                    <li><strong>Mode:</strong> GCM (Galois/Counter Mode) for authenticated encryption</li>
+                                    <li><strong>Speed:</strong> Fast, suitable for large data</li>
+                                    <li><strong>Use Case:</strong> Encrypting sensitive data like documents, messages, files</li>
+                                </ul>
+                                <p><strong>How it works:</strong> You encrypt data with a secret key, and only someone with that same key can decrypt it.</p>
+                            </div>
+                        </div>
+
+                        <!-- RSA Information -->
+                        <div class="card mb-4">
+                            <div class="card-header">
+                                <i class="fas fa-lock-open"></i> RSA (Rivest-Shamir-Adleman)
+                            </div>
+                            <div class="card-body">
+                                <h6>Asymmetric Encryption</h6>
+                                <p>RSA uses a public-private key pair. The public key encrypts data, and only the private key can decrypt it.</p>
+                                <ul>
+                                    <li><strong>Key Pair:</strong> Public (share with everyone) and Private (keep secret)</li>
+                                    <li><strong>Key Size:</strong> 2048 or 4096 bits (we use 2048 for balance)</li>
+                                    <li><strong>Mode:</strong> OAEP (Optimal Asymmetric Encryption Padding)</li>
+                                    <li><strong>Speed:</strong> Slower than AES, but enables secure key exchange</li>
+                                    <li><strong>Limitation:</strong> Can only encrypt ~245 bytes with 2048-bit key</li>
+                                    <li><strong>Use Case:</strong> Secure communication, digital signatures, key exchange</li>
+                                </ul>
+                                <p><strong>How it works:</strong> Anyone can send you encrypted messages using your public key, but only you can decrypt them with your private key.</p>
+                            </div>
+                        </div>
+
+                        <!-- SHA-256 Information -->
+                        <div class="card mb-4">
+                            <div class="card-header">
+                                <i class="fas fa-fingerprint"></i> SHA-256 (Secure Hash Algorithm)
+                            </div>
+                            <div class="card-body">
+                                <h6>Cryptographic Hash Function</h6>
+                                <p>SHA-256 converts any input into a fixed 256-bit (64 hex character) output. It's one-way and collision-resistant.</p>
+                                <ul>
+                                    <li><strong>Output Size:</strong> 256 bits (64 hexadecimal characters)</li>
+                                    <li><strong>Reversible:</strong> No - you cannot get the original input from the hash</li>
+                                    <li><strong>Deterministic:</strong> Same input always produces same hash</li>
+                                    <li><strong>Collision Resistance:</strong> Extremely hard to find two inputs with same hash</li>
+                                    <li><strong>Use Case:</strong> Password storage, data integrity, digital signatures</li>
+                                </ul>
+                                <p><strong>For Passwords:</strong> We use salting (random data) to prevent rainbow table attacks. Each password gets a unique salt and hash.</p>
+                                <p><strong>For Data Integrity:</strong> Hash files or messages to verify they haven't been tampered with.</p>
+                            </div>
+                        </div>
+
+                        <!-- Getting Started -->
+                        <div class="card mb-4">
+                            <div class="card-header">
+                                <i class="fas fa-play"></i> Getting Started
+                            </div>
+                            <div class="card-body">
+                                <h6>Step 1: AES Encryption</h6>
+                                <ol>
+                                    <li>Click "Generate New AES Key" to create a secret key</li>
+                                    <li>Enter text in the plaintext field</li>
+                                    <li>Click "Encrypt" to get ciphertext, nonce, and tag</li>
+                                    <li>To decrypt, paste the key, ciphertext, nonce, and tag into the decryption form</li>
+                                </ol>
+
+                                <h6>Step 2: RSA Encryption</h6>
+                                <ol>
+                                    <li>Click "Generate New Keypair" to create public and private keys</li>
+                                    <li>Share the public key with others (it's safe to share)</li>
+                                    <li>Keep the private key secret!</li>
+                                    <li>To encrypt: use the public key to encrypt a message</li>
+                                    <li>To decrypt: use the private key to decrypt a message</li>
+                                </ol>
+
+                                <h6>Step 3: Password Hashing</h6>
+                                <ol>
+                                    <li>Enter a password and click "Hash Password"</li>
+                                    <li>Store the "Full Hash" in your database (includes salt)</li>
+                                    <li>To verify: enter the password and stored hash, click "Verify Password"</li>
+                                    <li>The system hashes the input with the same salt and compares the results</li>
+                                </ol>
+                            </div>
+                        </div>
+
+                        <!-- Security Notes -->
+                        <div class="card">
+                            <div class="card-header">
+                                <i class="fas fa-exclamation-triangle"></i> Security Notes
+                            </div>
+                            <div class="card-body">
+                                <ul>
+                                    <li><strong>RSA Private Keys:</strong> Never share or expose your private keys. They're like passwords for your encrypted data.</li>
+                                    <li><strong>AES Keys:</strong> Treat AES keys as secrets. They should be stored securely, not in plain text.</li>
+                                    <li><strong>Password Hashing:</strong> Always use salt when hashing passwords. Never store plain-text passwords.</li>
+                                    <li><strong>Key Size:</strong> 2048-bit RSA and 256-bit AES are considered secure for most use cases.</li>
+                                    <li><strong>HTTPS:</strong> In production, always use HTTPS to encrypt data in transit.</li>
+                                    <li><strong>This Demo:</strong> This is a learning tool. For production use, follow proper security practices.</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+    <!-- Custom JavaScript -->
+    <script>
+        // ========================================================
+        // UTILITY FUNCTIONS
+        // ========================================================
+
+        /**
+         * Show notification alert
+         * @param {string} message - Message to display
+         * @param {string} type - 'success', 'error', or 'info'
+         */
+        function showAlert(message, type = 'info') {
+            const alertDiv = document.createElement('div');
+            alertDiv.className = `alert alert-${type} alert-dismissible fade show`;
+            alertDiv.innerHTML = `
+                ${message}
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            `;
+            document.body.insertBefore(alertDiv, document.body.firstChild);
+
+            // Auto dismiss after 5 seconds
+            setTimeout(() => {
+                alertDiv.remove();
+            }, 5000);
+        }
+
+        /**
+         * Copy text to clipboard
+         * @param {string} elementId - ID of element with text to copy
+         */
+        function copyToClipboard(elementId) {
+            const element = document.getElementById(elementId);
+            const text = element.value || element.textContent;
+            
+            navigator.clipboard.writeText(text).then(() => {
+                showAlert('Copied to clipboard!', 'success');
+            }).catch(() => {
+                showAlert('Failed to copy', 'error');
+            });
+        }
+
+        /**
+         * Show loading state on button
+         * @param {element} button - Button element
+         * @param {boolean} isLoading - Loading state
+         */
+        function setButtonLoading(button, isLoading) {
+            if (isLoading) {
+                button.disabled = true;
+                button.innerHTML = `<span class="spinner-border spinner-border-sm me-2"></span>Processing...`;
+            } else {
+                button.disabled = false;
+                button.innerHTML = button.getAttribute('data-original-html');
+            }
+        }
+
+        /**
+         * Make API request
+         * @param {string} endpoint - API endpoint
+         * @param {object} data - Request data
+         * @returns {promise} Response JSON
+         */
+        async function apiCall(endpoint, data) {
+            try {
+                const response = await fetch(endpoint, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(data)
+                });
+
+                if (!response.ok) {
+                    const error = await response.json();
+                    throw new Error(error.message || 'API error');
+                }
+
+                return await response.json();
+            } catch (error) {
+                throw error;
+            }
+        }
+
+        // Store original HTML for buttons
+        document.querySelectorAll('.btn').forEach(btn => {
+            btn.setAttribute('data-original-html', btn.innerHTML);
+        });
+
+        // ========================================================
+        // AES ENCRYPTION/DECRYPTION
+        // ========================================================
+
+        /**
+         * Generate new AES key
+         */
+        document.getElementById('generateAesKeyBtn').addEventListener('click', async function () {
+            setButtonLoading(this, true);
+            try {
+                const result = await apiCall('/api/generate-aes-key', {});
+                document.getElementById('aesKey').value = result.key;
+                document.getElementById('aesDecryptKey').value = result.key;
+                showAlert(result.message, 'success');
+            } catch (error) {
+                showAlert(`Error: ${error.message}`, 'error');
+            } finally {
+                setButtonLoading(this, false);
+            }
+        });
+
+        /**
+         * AES Encryption
+         */
+        document.getElementById('aesEncryptBtn').addEventListener('click', async function () {
+            setButtonLoading(this, true);
+            try {
+                const plaintext = document.getElementById('aesPlaintext').value;
+                const key = document.getElementById('aesKey').value;
+
+                if (!plaintext.trim()) {
+                    showAlert('Please enter plaintext', 'error');
+                    return;
+                }
+                if (!key.trim()) {
+                    showAlert('Please enter or generate an AES key', 'error');
+                    return;
+                }
+
+                const result = await apiCall('/api/aes-encrypt', { plaintext, key });
+
+                document.getElementById('aesCiphertext').textContent = result.ciphertext;
+                document.getElementById('aesNonce').textContent = result.nonce;
+                document.getElementById('aesTag').textContent = result.tag;
+                document.getElementById('aesEncryptOutput').classList.add('show');
+
+                // Auto-fill decrypt fields
+                document.getElementById('aesDecryptCiphertext').value = result.ciphertext;
+                document.getElementById('aesDecryptNonce').value = result.nonce;
+                document.getElementById('aesDecryptTag').value = result.tag;
+
+                showAlert('Encryption successful!', 'success');
+            } catch (error) {
+                showAlert(`Error: ${error.message}`, 'error');
+            } finally {
+                setButtonLoading(this, false);
+            }
+        });
+
+        /**
+         * AES Decryption
+         */
+        document.getElementById('aesDecryptBtn').addEventListener('click', async function () {
+            setButtonLoading(this, true);
+            try {
+                const ciphertext = document.getElementById('aesDecryptCiphertext').value;
+                const key = document.getElementById('aesDecryptKey').value;
+                const nonce = document.getElementById('aesDecryptNonce').value;
+                const tag = document.getElementById('aesDecryptTag').value;
+
+                if (!ciphertext.trim() || !key.trim() || !nonce.trim() || !tag.trim()) {
+                    showAlert('Please fill in all fields', 'error');
+                    return;
+                }
+
+                const result = await apiCall('/api/aes-decrypt', { ciphertext, key, nonce, tag });
+
+                document.getElementById('aesDecryptPlaintext').textContent = result.plaintext;
+                document.getElementById('aesDecryptOutput').classList.add('show');
+                showAlert('Decryption successful!', 'success');
+            } catch (error) {
+                showAlert(`Error: ${error.message}`, 'error');
+            } finally {
+                setButtonLoading(this, false);
+            }
+        });
+
+        // ========================================================
+        // RSA ENCRYPTION/DECRYPTION
+        // ========================================================
+
+        /**
+         * Generate RSA key pair
+         */
+        document.getElementById('generateRsaKeypairBtn').addEventListener('click', async function () {
+            setButtonLoading(this, true);
+            try {
+                const result = await apiCall('/api/generate-rsa-keypair', {});
+
+                document.getElementById('rsaPublicKey').value = result.public_key;
+                document.getElementById('rsaPrivateKey').value = result.private_key;
+                document.getElementById('rsaPublicKeyForEncrypt').value = result.public_key;
+                document.getElementById('rsaPrivateKeyForDecrypt').value = result.private_key;
+                document.getElementById('rsaKeypairOutput').style.display = 'block';
+
+                showAlert(result.message, 'success');
+            } catch (error) {
+                showAlert(`Error: ${error.message}`, 'error');
+            } finally {
+                setButtonLoading(this, false);
+            }
+        });
+
+        /**
+         * RSA Encryption
+         */
+        document.getElementById('rsaEncryptBtn').addEventListener('click', async function () {
+            setButtonLoading(this, true);
+            try {
+                const plaintext = document.getElementById('rsaPlaintext').value;
+                const public_key = document.getElementById('rsaPublicKeyForEncrypt').value;
+
+                if (!plaintext.trim()) {
+                    showAlert('Please enter plaintext', 'error');
+                    return;
+                }
+                if (!public_key.trim()) {
+                    showAlert('Please enter or generate a public key', 'error');
+                    return;
+                }
+
+                const result = await apiCall('/api/rsa-encrypt', { plaintext, public_key });
+
+                document.getElementById('rsaCiphertext').textContent = result.ciphertext;
+                document.getElementById('rsaEncryptOutput').classList.add('show');
+                document.getElementById('rsaDecryptCiphertext').value = result.ciphertext;
+
+                showAlert('Encryption successful!', 'success');
+            } catch (error) {
+                showAlert(`Error: ${error.message}`, 'error');
+            } finally {
+                setButtonLoading(this, false);
+            }
+        });
+
+        /**
+         * RSA Decryption
+         */
+        document.getElementById('rsaDecryptBtn').addEventListener('click', async function () {
+            setButtonLoading(this, true);
+            try {
+                const ciphertext = document.getElementById('rsaDecryptCiphertext').value;
+                const private_key = document.getElementById('rsaPrivateKeyForDecrypt').value;
+
+                if (!ciphertext.trim()) {
+                    showAlert('Please enter ciphertext', 'error');
+                    return;
+                }
+                if (!private_key.trim()) {
+                    showAlert('Please enter or generate a private key', 'error');
+                    return;
+                }
+
+                const result = await apiCall('/api/rsa-decrypt', { ciphertext, private_key });
+
+                document.getElementById('rsaDecryptPlaintext').textContent = result.plaintext;
+                document.getElementById('rsaDecryptOutput').classList.add('show');
+
+                showAlert('Decryption successful!', 'success');
+            } catch (error) {
+                showAlert(`Error: ${error.message}`, 'error');
+            } finally {
+                setButtonLoading(this, false);
+            }
+        });
+
+        // ========================================================
+        // SHA-256 HASHING
+        // ========================================================
+
+        /**
+         * Hash password with salt
+         */
+        document.getElementById('hashPasswordBtn').addEventListener('click', async function () {
+            setButtonLoading(this, true);
+            try {
+                const password = document.getElementById('passwordInput').value;
+
+                if (!password.trim()) {
+                    showAlert('Please enter a password', 'error');
+                    return;
+                }
+
+                const result = await apiCall('/api/sha256-hash-password', { password });
+
+                document.getElementById('passwordSalt').textContent = result.salt;
+                document.getElementById('passwordHash').textContent = result.hash;
+                document.getElementById('fullPasswordHash').textContent = result.full_hash;
+                document.getElementById('passwordHashOutput').classList.add('show');
+                document.getElementById('storedHash').value = result.full_hash;
+
+                showAlert(result.message, 'success');
+            } catch (error) {
+                showAlert(`Error: ${error.message}`, 'error');
+            } finally {
+                setButtonLoading(this, false);
+            }
+        });
+
+        /**
+         * Verify password
+         */
+        document.getElementById('verifyPasswordBtn').addEventListener('click', async function () {
+            setButtonLoading(this, true);
+            try {
+                const password = document.getElementById('passwordToVerify').value;
+                const stored_hash = document.getElementById('storedHash').value;
+
+                if (!password.trim()) {
+                    showAlert('Please enter a password to verify', 'error');
+                    return;
+                }
+                if (!stored_hash.trim()) {
+                    showAlert('Please enter stored hash', 'error');
+                    return;
+                }
+
+                const result = await apiCall('/api/sha256-verify-password', { password, stored_hash });
+
+                const verifyResult = document.getElementById('verifyResult');
+                if (result.match) {
+                    verifyResult.innerHTML = `
+                        <div class="alert alert-success" role="alert">
+                            <i class="fas fa-check-circle"></i> <strong>Password Match!</strong><br>
+                            The password is correct!
+                        </div>
+                    `;
+                } else {
+                    verifyResult.innerHTML = `
+                        <div class="alert alert-danger" role="alert">
+                            <i class="fas fa-times-circle"></i> <strong>Password Mismatch!</strong><br>
+                            The password does not match the stored hash.
+                        </div>
+                    `;
+                }
+                document.getElementById('passwordVerifyOutput').classList.add('show');
+            } catch (error) {
+                showAlert(`Error: ${error.message}`, 'error');
+            } finally {
+                setButtonLoading(this, false);
+            }
+        });
+
+        /**
+         * Hash data for integrity check
+         */
+        document.getElementById('hashDataBtn').addEventListener('click', async function () {
+            setButtonLoading(this, true);
+            try {
+                const data = document.getElementById('dataToHash').value;
+
+                if (!data.trim()) {
+                    showAlert('Please enter data to hash', 'error');
+                    return;
+                }
+
+                const result = await apiCall('/api/sha256-hash-data', { data });
+
+                document.getElementById('dataHash').textContent = result.hash;
+                document.getElementById('dataHashOutput').classList.add('show');
+
+                showAlert(result.message, 'success');
+            } catch (error) {
+                showAlert(`Error: ${error.message}`, 'error');
+            } finally {
+                setButtonLoading(this, false);
+            }
+        });
+    </script>
+</body>
+</html>
